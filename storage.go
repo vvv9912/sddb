@@ -26,8 +26,8 @@ func (s *ProductsPostgresStorage) AddProduct(ctx context.Context, product Produc
 
 	if _, err := conn.ExecContext(
 		ctx,
-		`INSERT INTO products (article, catalog, name, description, photo_url, price, length, width, heigth, weight)
-	    				VALUES ($1, $2, $3,$4, $5, $6,$7, $8, $9, $10)
+		`INSERT INTO products (article, catalog, name, description, photo_url, price, length, width, heigth, weight,availability)
+	    				VALUES ($1, $2, $3,$4, $5, $6,$7, $8, $9, $10,$11)
 	    				ON CONFLICT DO NOTHING;`,
 		product.Article,
 		product.Catalog,
@@ -39,6 +39,7 @@ func (s *ProductsPostgresStorage) AddProduct(ctx context.Context, product Produc
 		product.Width,
 		product.Height,
 		product.Weight,
+		product.Availability,
 		//users.CreatedAt,
 	); err != nil {
 		return err
@@ -55,7 +56,7 @@ func (s *ProductsPostgresStorage) ChangeProductByArticle(ctx context.Context, pr
 
 	result, err := conn.ExecContext(
 		ctx,
-		`UPDATE products SET catalog = $2, name = $3, description = $4, photo_url = $5, price = $6, length = $7, width = $8, heigth = $9, weight = $10
+		`UPDATE products SET catalog = $2, name = $3, description = $4, photo_url = $5, price = $6, length = $7, width = $8, heigth = $9, weight = $10, availability = $11
 	    				WHERE article = $1`,
 		product.Article,
 		product.Catalog,
@@ -67,6 +68,7 @@ func (s *ProductsPostgresStorage) ChangeProductByArticle(ctx context.Context, pr
 		product.Width,
 		product.Height,
 		product.Weight,
+		product.Availability,
 		//users.CreatedAt,
 	)
 	if err != nil {
@@ -118,7 +120,8 @@ func (s *ProductsPostgresStorage) SelectAllProducts(ctx context.Context) ([]Prod
      length AS a_length,
      width  AS a_width,
      heigth  AS a_height,
-     weight  AS a_weight
+     weight  AS a_weight,
+    availability as a_availability
 	 FROM products
 	 ORDER BY article asc;`,
 	); err != nil {
@@ -136,16 +139,17 @@ func (s *ProductsPostgresStorage) SelectAllProducts(ctx context.Context) ([]Prod
 
 		// Создайте экземпляр dbProduct и заполните его данными
 		product := Products{
-			Article:     getProduct.Article,
-			Catalog:     getProduct.Catalog,
-			Name:        getProduct.Name,
-			Description: getProduct.Description,
-			PhotoUrl:    photoUrls,
-			Price:       getProduct.Price,
-			Length:      getProduct.Length,
-			Width:       getProduct.Width,
-			Height:      getProduct.Height,
-			Weight:      getProduct.Weight,
+			Article:      getProduct.Article,
+			Catalog:      getProduct.Catalog,
+			Name:         getProduct.Name,
+			Description:  getProduct.Description,
+			PhotoUrl:     photoUrls,
+			Price:        getProduct.Price,
+			Length:       getProduct.Length,
+			Width:        getProduct.Width,
+			Height:       getProduct.Height,
+			Weight:       getProduct.Weight,
+			Availability: getProduct.Availability,
 		}
 
 		// Добавьте созданный экземпляр в срез products
