@@ -26,7 +26,7 @@ func (s *ProductsPostgresStorage) AddProduct(ctx context.Context, product Produc
 
 	if _, err := conn.ExecContext(
 		ctx,
-		`INSERT INTO products (article, catalog, name, description, photo_url, price, length, width, heigth, weight,availability)
+		`INSERT INTO products (article, catalog, name, description, photo_url, price, length, width, heigth, weight,available)
 	    				VALUES ($1, $2, $3,$4, $5, $6,$7, $8, $9, $10,$11)
 	    				ON CONFLICT DO NOTHING;`,
 		product.Article,
@@ -56,7 +56,7 @@ func (s *ProductsPostgresStorage) ChangeProductByArticle(ctx context.Context, pr
 
 	result, err := conn.ExecContext(
 		ctx,
-		`UPDATE products SET catalog = $2, name = $3, description = $4, photo_url = $5, price = $6, length = $7, width = $8, heigth = $9, weight = $10, availability = $11
+		`UPDATE products SET catalog = $2, name = $3, description = $4, photo_url = $5, price = $6, length = $7, width = $8, heigth = $9, weight = $10, available = $11
 	    				WHERE article = $1`,
 		product.Article,
 		product.Catalog,
@@ -275,7 +275,7 @@ type dbProduct struct {
 	Width        int      `db:"a_width"`
 	Height       int      `db:"a_height"`
 	Weight       int      `db:"a_weight"`
-	Availability bool     `db:"a_availability"`
+	Availability bool     `db:"a_available"`
 }
 type getdbProduct struct {
 	Article      int           `db:"a_article"`
@@ -288,5 +288,5 @@ type getdbProduct struct {
 	Width        int           `db:"a_width"`
 	Height       int           `db:"a_height"`
 	Weight       int           `db:"a_weight"`
-	Availability bool          `db:"a_availability"`
+	Availability bool          `db:"a_available"`
 }
