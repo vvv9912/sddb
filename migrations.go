@@ -20,9 +20,9 @@ func Migrate(db *sqlx.DB) error {
 
 		return fmt.Errorf("postgres migrate up: %w", err)
 	}
-	if err := db.Close(); err != nil {
-		return fmt.Errorf("postgres migrate close: %w", err)
-	}
+	//if err := db.Close(); err != nil {
+	//	return fmt.Errorf("postgres migrate close: %w", err)
+	//}
 
 	return nil
 }
