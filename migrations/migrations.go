@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/pressly/goose/v3"
-	"log"
-	"os"
 )
 
 //go:embed migrations/*
@@ -18,9 +16,6 @@ func Migrate(db *sqlx.DB) error {
 	if err := goose.SetDialect("postgres"); err != nil {
 		return fmt.Errorf("postgres migrate set dialect postgres: %w", err)
 	}
-	dir, err := os.Getwd()
-	log.Println(dir)
-	_ = err
 	if err := goose.Up(db.DB, "migrations"); err != nil {
 
 		return fmt.Errorf("postgres migrate up: %w", err)
