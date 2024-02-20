@@ -1,4 +1,4 @@
-package migrations
+package sddb
 
 import (
 	"embed"
