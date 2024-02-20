@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	sddb "github.com/vvv9912/sddb/migrations"
+	"github.com/vvv9912/sddb"
 	"log"
 )
 
