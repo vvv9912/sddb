@@ -14,9 +14,13 @@ type ProductsPostgresStorage struct {
 	db *sqlx.DB
 }
 
+var errorsArticleNotFound = errors.New("no rows updated, article not found")
+
 func NewProductsPostgresStorage(db *sqlx.DB) *ProductsPostgresStorage {
 	return &ProductsPostgresStorage{db: db}
 }
+
+// use tg
 func (s *ProductsPostgresStorage) AddProduct(ctx context.Context, product Products) error {
 	conn, err := s.db.Connx(ctx)
 	if err != nil {
@@ -47,6 +51,8 @@ func (s *ProductsPostgresStorage) AddProduct(ctx context.Context, product Produc
 	log.Println("insert BD:", product.Article, product.Name, "len:photo", len(product.PhotoUrl))
 	return nil
 }
+
+// no use tg
 func (s *ProductsPostgresStorage) ChangeProductByArticle(ctx context.Context, product Products) error {
 	conn, err := s.db.Connx(ctx)
 	if err != nil {
@@ -81,11 +87,29 @@ func (s *ProductsPostgresStorage) ChangeProductByArticle(ctx context.Context, pr
 		return err
 	}
 	if rowsAffected == 0 {
-		return errors.New("no rows updated, article not found")
+		return errorsArticleNotFound
 	}
 	log.Println("update BD:", product.Article, product.Name, "len:photo", len(product.PhotoUrl))
 	return nil
 }
+
+// todo // Will use tg //will been test
+func (s *ProductsPostgresStorage) CatalogIsAvailable(ctx context.Context) ([]string, error) {
+
+	conn, err := s.db.Connx(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+	var catalog []string
+	if err := conn.SelectContext(ctx, &catalog, `SELECT DISTINCT catalog FROM products where 'available' = true`); err != nil {
+		return nil, err
+	}
+
+	return catalog, nil
+}
+
+// use tg
 func (s *ProductsPostgresStorage) Catalog(ctx context.Context) ([]string, error) {
 
 	conn, err := s.db.Connx(ctx)
@@ -100,6 +124,8 @@ func (s *ProductsPostgresStorage) Catalog(ctx context.Context) ([]string, error)
 
 	return catalog, nil
 }
+
+// no use tg
 func (s *ProductsPostgresStorage) SelectAllProducts(ctx context.Context) ([]Products, error) {
 	conn, err := s.db.Connx(ctx)
 	if err != nil {
@@ -159,6 +185,7 @@ func (s *ProductsPostgresStorage) SelectAllProducts(ctx context.Context) ([]Prod
 	return products, nil
 }
 
+// use tg
 func (s *ProductsPostgresStorage) ProductsByCatalog(ctx context.Context, ctlg string) ([]Products, error) {
 	conn, err := s.db.Connx(ctx)
 	if err != nil {
@@ -211,6 +238,8 @@ func (s *ProductsPostgresStorage) ProductsByCatalog(ctx context.Context, ctlg st
 	//return lo.Map(products, func(product dbProduct, _ int) model.Products { return model.Products(product) }), nil
 	return products, nil
 }
+
+// use tg
 func (s *ProductsPostgresStorage) ProductByArticle(ctx context.Context, article int) (Products, error) {
 	conn, err := s.db.Connx(ctx)
 	if err != nil {

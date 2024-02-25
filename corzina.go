@@ -14,6 +14,8 @@ type CorzinaPostgresStorage struct {
 func NewCorzinaPostgresStorage(db *sqlx.DB) *CorzinaPostgresStorage {
 	return &CorzinaPostgresStorage{db: db}
 }
+
+// use tg
 func (s *CorzinaPostgresStorage) AddCorzinas(ctx context.Context, corz Corzine) error {
 	conn, err := s.db.Connx(ctx)
 	if err != nil {
@@ -36,6 +38,8 @@ func (s *CorzinaPostgresStorage) AddCorzinas(ctx context.Context, corz Corzine) 
 
 	return nil
 }
+
+// no use tg
 func (s *CorzinaPostgresStorage) CorzinaByTgId(ctx context.Context, tgId int64) ([]Corzine, error) {
 	conn, err := s.db.Connx(ctx)
 	if err != nil {
@@ -61,6 +65,7 @@ func (s *CorzinaPostgresStorage) CorzinaByTgId(ctx context.Context, tgId int64) 
 	return lo.Map(corzine, func(corzin dbCorzine, _ int) Corzine { return Corzine(corzin) }), nil
 }
 
+// use tg
 func (s *CorzinaPostgresStorage) CorzinaByTgIdANDAtricle(ctx context.Context, tgId int64, article int) (Corzine, error) {
 	conn, err := s.db.Connx(ctx)
 	if err != nil {
@@ -86,6 +91,8 @@ func (s *CorzinaPostgresStorage) CorzinaByTgIdANDAtricle(ctx context.Context, tg
 	//return lo.Map(corzine, func(corzin dbCorzine, _ int) model.Corzine { return model.Corzine(corzin) }), nil
 	return Corzine{ID: corzine.ID, TgId: corzine.TgId, Article: corzine.Article, Quantity: corzine.Quantity, CreatedAt: corzine.CreatedAt}, nil
 }
+
+// use tg
 func (s *CorzinaPostgresStorage) UpdateCorzinaByTgId(ctx context.Context, tgId int64, article int, quantity int) error {
 	conn, err := s.db.Connx(ctx)
 	if err != nil {
@@ -112,6 +119,7 @@ type dbCorzine struct {
 	CreatedAt time.Time `db:"c_created_at"`
 }
 
+// use tg
 func (s *CorzinaPostgresStorage) CorzinaByTgIdwithCalalog(ctx context.Context, tgId int64) ([]DbCorzineCatalog, error) {
 	conn, err := s.db.Connx(ctx)
 	if err != nil {
@@ -141,6 +149,8 @@ func (s *CorzinaPostgresStorage) CorzinaByTgIdwithCalalog(ctx context.Context, t
 
 	return corzineall, nil
 }
+
+// use tg
 func (s *CorzinaPostgresStorage) DeleteCorzinaByTgID(ctx context.Context, tgId int64) error {
 	conn, err := s.db.Connx(ctx)
 	if err != nil {
@@ -155,6 +165,7 @@ func (s *CorzinaPostgresStorage) DeleteCorzinaByTgID(ctx context.Context, tgId i
 	return nil
 }
 
+// use tg
 func (s *CorzinaPostgresStorage) DeleteCorzinaByTgIDandArticle(ctx context.Context, tgId int64, article int) error {
 	conn, err := s.db.Connx(ctx)
 	if err != nil {

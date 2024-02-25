@@ -15,6 +15,8 @@ type OrdersPostgresStorage struct {
 func NewOrdersPostgresStorage(db *sqlx.DB) *OrdersPostgresStorage {
 	return &OrdersPostgresStorage{db: db}
 }
+
+// use tg
 func (s *OrdersPostgresStorage) OrdersByTgID(ctx context.Context, tgId int64) ([]Orders, error) {
 	conn, err := s.db.Connx(ctx)
 	if err != nil {
@@ -55,11 +57,7 @@ type dbOrder struct {
 	PriceFull     float64   `db:"o_price_full"`
 }
 
-func (s *OrdersPostgresStorage) OrdersByArticle() {
-
-}
-
-// todo
+// use tg
 func (s *OrdersPostgresStorage) AddOrders(ctx context.Context, order Orders) error {
 	//conn, err := s.db.Connx(ctx)
 	// &sql.TxOptions{Isolation: sql.LevelSerializable}
