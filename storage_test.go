@@ -68,7 +68,7 @@ func (ts *PostrgresTestSuite) SetupSuite() {
 	cfg.Host, err = pgc.Host(ctx)
 	require.NoError(ts.T(), err)
 
-	port, err := pgc.MappedPort(ctx, "5433")
+	port, err := pgc.MappedPort(ctx, "5432")
 	require.NoError(ts.T(), err)
 
 	cfg.Port = port.Int()
@@ -82,7 +82,11 @@ func (ts *PostrgresTestSuite) SetupSuite() {
 	db, err := sqlx.Connect("postgres", database_dsn2)
 
 	storage := NewProductsPostgresStorage(db)
+
 	ts.testStorager = storage
+
+	err = Migrate(db)
+	require.NoError(ts.T(), err)
 
 	ts.T().Logf("stared postgres at %s:%d", cfg.Host, cfg.Port)
 
@@ -119,6 +123,21 @@ func (ts *PostrgresTestSuite) TearDownTest() {
 }
 
 func (ts *PostrgresTestSuite) TestCatalog() {
+
+	err := ts.AddProduct(context.Background(), Products{
+		Article:      1,
+		Catalog:      "Test Catalog",
+		Name:         "Name",
+		Description:  "Descrip",
+		PhotoUrl:     nil,
+		Price:        144,
+		Length:       1,
+		Width:        1,
+		Height:       1,
+		Weight:       1,
+		Availability: false,
+	})
+	ts.NoError(err)
 	goods, err := ts.Catalog(context.Background())
 	ts.NoError(err)
 
