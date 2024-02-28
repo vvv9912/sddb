@@ -93,7 +93,7 @@ func (s *ProductsPostgresStorage) ChangeProductByArticle(ctx context.Context, pr
 	return nil
 }
 
-// todo // Will use tg //will been test
+// todo // Will use tg
 func (s *ProductsPostgresStorage) CatalogIsAvailable(ctx context.Context) ([]string, error) {
 
 	conn, err := s.db.Connx(ctx)
@@ -102,7 +102,7 @@ func (s *ProductsPostgresStorage) CatalogIsAvailable(ctx context.Context) ([]str
 	}
 	defer conn.Close()
 	var catalog []string
-	if err := conn.SelectContext(ctx, &catalog, `SELECT DISTINCT catalog FROM products where 'available' = true`); err != nil {
+	if err := conn.SelectContext(ctx, &catalog, `SELECT DISTINCT catalog FROM products where available = true`); err != nil {
 		return nil, err
 	}
 
@@ -176,6 +176,60 @@ func (s *ProductsPostgresStorage) SelectAllProducts(ctx context.Context) ([]Prod
 			Height:       getProduct.Height,
 			Weight:       getProduct.Weight,
 			Availability: getProduct.Availability,
+		}
+
+		// Добавьте созданный экземпляр в срез products
+		products = append(products, product)
+	}
+	//return lo.Map(products, func(product dbProduct, _ int) model.Products { return model.Products(product) }), nil
+	return products, nil
+}
+
+// use tg
+func (s *ProductsPostgresStorage) GetProductsByCatalogIsAvailable(ctx context.Context, ctlg string) ([]Products, error) {
+	conn, err := s.db.Connx(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+	//var products []model.Products
+	var getProducts []getdbProduct
+	if err := conn.SelectContext(ctx,
+		&getProducts,
+		`SELECT
+     article AS a_article,
+     catalog AS a_catalog,
+     name AS a_name,
+     description AS a_description,
+     photo_url AS a_photo_url,
+     price AS a_price
+	 FROM products
+	 WHERE catalog = $1 and available = true`,
+		ctlg); err != nil {
+		return nil, err
+	}
+	// Создайте срез для хранения данных в формате dbProduct
+	var products []Products
+
+	for _, getProduct := range getProducts {
+		// Преобразуйте PhotoUrl из pq.ByteaArray в [][]byte
+		var photoUrls [][]byte
+		for _, byteData := range getProduct.PhotoUrl {
+			photoUrls = append(photoUrls, []byte(byteData))
+		}
+
+		// Создайте экземпляр dbProduct и заполните его данными
+		product := Products{
+			Article:     getProduct.Article,
+			Catalog:     getProduct.Catalog,
+			Name:        getProduct.Name,
+			Description: getProduct.Description,
+			PhotoUrl:    photoUrls,
+			Price:       getProduct.Price,
+			Length:      getProduct.Length,
+			Width:       getProduct.Width,
+			Height:      getProduct.Height,
+			Weight:      getProduct.Weight,
 		}
 
 		// Добавьте созданный экземпляр в срез products
