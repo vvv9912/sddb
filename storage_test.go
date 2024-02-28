@@ -76,10 +76,9 @@ func (ts *PostrgresTestSuite) SetupSuite() {
 	ts.tc = pgc
 	ts.cfg = cfg
 
-	//	database_dsn := "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable"
-	database_dsn2 := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable", cfg.Username, cfg.Password, cfg.Host, cfg.Port, cfg.DBName)
-	log.Println(database_dsn2)
-	db, err := sqlx.Connect("postgres", database_dsn2)
+	database_dsn := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable", cfg.Username, cfg.Password, cfg.Host, cfg.Port, cfg.DBName)
+	log.Println(database_dsn)
+	db, err := sqlx.Connect("postgres", database_dsn)
 
 	storage := NewProductsPostgresStorage(db)
 
