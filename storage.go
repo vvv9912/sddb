@@ -9,7 +9,6 @@ import (
 	"log"
 )
 
-// веб сайта
 type ProductsPostgresStorage struct {
 	db *sqlx.DB
 }
