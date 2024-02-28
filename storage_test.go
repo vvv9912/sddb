@@ -143,36 +143,3 @@ func (ts *PostrgresTestSuite) TestCatalog() {
 	log.Println(goods)
 	//ts.Require().NoError(ts.clean(context.Background()))
 }
-func Tst(t *testing.T) {
-	log.Println("test")
-}
-
-//
-//func TestProductsPostgresStorage_AddProduct(t *testing.T) {
-//
-//	//type fields struct {
-//	//	db *sqlx.DB
-//	//}
-//	//type args struct {
-//	//	ctx     context.Context
-//	//	product Products
-//	//}
-//	//tests := []struct {
-//	//	name    string
-//	//	fields  fields
-//	//	args    args
-//	//	wantErr bool
-//	//}{
-//	//	// TODO: Add test cases.
-//	//}
-//	//for _, tt := range tests {
-//	//	t.Run(tt.name, func(t *testing.T) {
-//	//		s := &ProductsPostgresStorage{
-//	//			db: tt.fields.db,
-//	//		}
-//	//		if err := s.AddProduct(tt.args.ctx, tt.args.product); (err != nil) != tt.wantErr {
-//	//			t.Errorf("AddProduct() error = %v, wantErr %v", err, tt.wantErr)
-//	//		}
-//	//	})
-//	//}
-//}
