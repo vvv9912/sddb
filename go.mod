@@ -1,6 +1,6 @@
 module github.com/vvv9912/sddb
 
-go 1.22
+go 1.21
 
 require (
 	github.com/jmoiron/sqlx v1.3.5
