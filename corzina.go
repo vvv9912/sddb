@@ -7,17 +7,17 @@ import (
 	"time"
 )
 
-type CorzinaPostgresStorage struct {
+type ShopCartPostgresStorage struct {
 	db *sqlx.DB
 }
 
-func NewCorzinaPostgresStorage(db *sqlx.DB) *CorzinaPostgresStorage {
-	return &CorzinaPostgresStorage{db: db}
+func NewCorzinaPostgresStorage(db *sqlx.DB) *ShopCartPostgresStorage {
+	return &ShopCartPostgresStorage{db: db}
 }
 
 // use tg
-func (s *CorzinaPostgresStorage) AddCorzinas(ctx context.Context, corz Corzine) error {
-	conn, err := s.db.Connx(ctx)
+func (s *ShopCartPostgresStorage) AddShopCart(ctx context.Context, shop ShopCart) error {
+	conn, err := s.db.Connx(ctx) //delete
 	if err != nil {
 		return err
 	}
@@ -28,10 +28,10 @@ func (s *CorzinaPostgresStorage) AddCorzinas(ctx context.Context, corz Corzine) 
 		`INSERT INTO corzina (tg_id, article,quantity,CREATED_AT)
 	    				VALUES ($1, $2, $3, $4)
 	    				ON CONFLICT DO NOTHING;`,
-		corz.TgId,
-		corz.Article,
-		corz.Quantity,
-		corz.CreatedAt,
+		shop.TgId,
+		shop.Article,
+		shop.Quantity,
+		shop.CreatedAt,
 	); err != nil {
 		return err
 	}
@@ -40,7 +40,8 @@ func (s *CorzinaPostgresStorage) AddCorzinas(ctx context.Context, corz Corzine) 
 }
 
 // no use tg
-func (s *CorzinaPostgresStorage) CorzinaByTgId(ctx context.Context, tgId int64) ([]Corzine, error) {
+// GetShopCartByTgID - CorzinaByTgId
+func (s *ShopCartPostgresStorage) GetShopCartByTgID(ctx context.Context, tgId int64) ([]ShopCart, error) {
 	conn, err := s.db.Connx(ctx)
 	if err != nil {
 		return nil, err
@@ -62,14 +63,15 @@ func (s *CorzinaPostgresStorage) CorzinaByTgId(ctx context.Context, tgId int64) 
 		return nil, err
 	}
 
-	return lo.Map(corzine, func(corzin dbCorzine, _ int) Corzine { return Corzine(corzin) }), nil
+	return lo.Map(corzine, func(corzin dbCorzine, _ int) ShopCart { return ShopCart(corzin) }), nil
 }
 
 // use tg
-func (s *CorzinaPostgresStorage) CorzinaByTgIdANDAtricle(ctx context.Context, tgId int64, article int) (Corzine, error) {
+// GetShopCartByTgIdAndArticle
+func (s *ShopCartPostgresStorage) GetShopCartByTgIdAndArticle(ctx context.Context, tgId int64, article int) (ShopCart, error) {
 	conn, err := s.db.Connx(ctx)
 	if err != nil {
-		return Corzine{}, err
+		return ShopCart{}, err
 	}
 	defer conn.Close()
 	var corzine dbCorzine
@@ -86,14 +88,15 @@ func (s *CorzinaPostgresStorage) CorzinaByTgIdANDAtricle(ctx context.Context, tg
 	err = row.Scan(&corzine.ID, &corzine.TgId, &corzine.Article,
 		&corzine.Quantity, &corzine.CreatedAt)
 	if err != nil {
-		return Corzine{}, err
+		return ShopCart{}, err
 	}
 	//return lo.Map(corzine, func(corzin dbCorzine, _ int) model.Corzine { return model.Corzine(corzin) }), nil
-	return Corzine{ID: corzine.ID, TgId: corzine.TgId, Article: corzine.Article, Quantity: corzine.Quantity, CreatedAt: corzine.CreatedAt}, nil
+	return ShopCart{ID: corzine.ID, TgId: corzine.TgId, Article: corzine.Article, Quantity: corzine.Quantity, CreatedAt: corzine.CreatedAt}, nil
 }
 
 // use tg
-func (s *CorzinaPostgresStorage) UpdateCorzinaByTgId(ctx context.Context, tgId int64, article int, quantity int) error {
+// UpdateShopCartByTgId -> UpdateCorzinaByTgId
+func (s *ShopCartPostgresStorage) UpdateShopCartByTgId(ctx context.Context, tgId int64, article int, quantity int) error {
 	conn, err := s.db.Connx(ctx)
 	if err != nil {
 		return err
@@ -120,7 +123,8 @@ type dbCorzine struct {
 }
 
 // use tg
-func (s *CorzinaPostgresStorage) CorzinaByTgIdwithCalalog(ctx context.Context, tgId int64) ([]DbCorzineCatalog, error) {
+// GetShopCartDetailByTgId - > CorzinaByTgIdwithCalalog
+func (s *ShopCartPostgresStorage) GetShopCartDetailByTgId(ctx context.Context, tgId int64) ([]DbCorzineCatalog, error) {
 	conn, err := s.db.Connx(ctx)
 	if err != nil {
 		return nil, err
@@ -151,7 +155,8 @@ func (s *CorzinaPostgresStorage) CorzinaByTgIdwithCalalog(ctx context.Context, t
 }
 
 // use tg
-func (s *CorzinaPostgresStorage) DeleteCorzinaByTgID(ctx context.Context, tgId int64) error {
+// DeleteShopCartByTgId
+func (s *ShopCartPostgresStorage) DeleteShopCartByTgId(ctx context.Context, tgId int64) error {
 	conn, err := s.db.Connx(ctx)
 	if err != nil {
 		return err
@@ -166,7 +171,8 @@ func (s *CorzinaPostgresStorage) DeleteCorzinaByTgID(ctx context.Context, tgId i
 }
 
 // use tg
-func (s *CorzinaPostgresStorage) DeleteCorzinaByTgIDandArticle(ctx context.Context, tgId int64, article int) error {
+// DeleteShopCartByTgIdAndArticle->DeleteCorzinaByTgIDandArticle
+func (s *ShopCartPostgresStorage) DeleteShopCartByTgIdAndArticle(ctx context.Context, tgId int64, article int) error {
 	conn, err := s.db.Connx(ctx)
 	if err != nil {
 		return err

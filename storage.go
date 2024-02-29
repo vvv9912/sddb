@@ -109,7 +109,7 @@ func (s *ProductsPostgresStorage) CatalogIsAvailable(ctx context.Context) ([]str
 }
 
 // use tg
-func (s *ProductsPostgresStorage) Catalog(ctx context.Context) ([]string, error) {
+func (s *ProductsPostgresStorage) GetCatalogNames(ctx context.Context) ([]string, error) {
 
 	conn, err := s.db.Connx(ctx)
 	if err != nil {
@@ -125,7 +125,7 @@ func (s *ProductsPostgresStorage) Catalog(ctx context.Context) ([]string, error)
 }
 
 // no use tg
-func (s *ProductsPostgresStorage) SelectAllProducts(ctx context.Context) ([]Products, error) {
+func (s *ProductsPostgresStorage) GetAllProducts(ctx context.Context) ([]Products, error) {
 	conn, err := s.db.Connx(ctx)
 	if err != nil {
 		return nil, err
@@ -239,7 +239,7 @@ func (s *ProductsPostgresStorage) GetProductsByCatalogIsAvailable(ctx context.Co
 }
 
 // use tg
-func (s *ProductsPostgresStorage) ProductsByCatalog(ctx context.Context, ctlg string) ([]Products, error) {
+func (s *ProductsPostgresStorage) GetProductsByCatalog(ctx context.Context, ctlg string) ([]Products, error) {
 	conn, err := s.db.Connx(ctx)
 	if err != nil {
 		return nil, err
@@ -293,7 +293,7 @@ func (s *ProductsPostgresStorage) ProductsByCatalog(ctx context.Context, ctlg st
 }
 
 // use tg
-func (s *ProductsPostgresStorage) ProductByArticle(ctx context.Context, article int) (Products, error) {
+func (s *ProductsPostgresStorage) GetProductByArticle(ctx context.Context, article int) (Products, error) {
 	conn, err := s.db.Connx(ctx)
 	if err != nil {
 		return Products{}, err

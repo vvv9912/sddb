@@ -7,14 +7,18 @@ import (
 
 type ProductsStorager interface {
 	AddProduct(ctx context.Context, product Products) error
+
 	ChangeProductByArticle(ctx context.Context, product Products) error
-	Catalog(ctx context.Context) ([]string, error)
 
-	SelectAllProducts(ctx context.Context) ([]Products, error)
+	GetCatalogNames(ctx context.Context) ([]string, error)
 
-	ProductsByCatalog(ctx context.Context, ctlg string) ([]Products, error)
+	GetAllProducts(ctx context.Context) ([]Products, error)
 
-	ProductByArticle(ctx context.Context, article int) (Products, error)
+	GetProductsByCatalogIsAvailable(ctx context.Context, ctlg string) ([]Products, error)
+
+	GetProductsByCatalog(ctx context.Context, ctlg string) ([]Products, error)
+
+	GetProductByArticle(ctx context.Context, article int) (Products, error)
 }
 type StorageProduct struct {
 	ProductsStorager
@@ -25,13 +29,13 @@ func NewStorageProducts(db *sqlx.DB) *StorageProduct {
 }
 
 type CorzinaStorager interface {
-	AddCorzinas(ctx context.Context, corz Corzine) error
-	CorzinaByTgId(ctx context.Context, tgId int64) ([]Corzine, error)
-	CorzinaByTgIdANDAtricle(ctx context.Context, tgId int64, article int) (Corzine, error)
-	UpdateCorzinaByTgId(ctx context.Context, tgId int64, article int, quantity int) error
-	CorzinaByTgIdwithCalalog(ctx context.Context, tgId int64) ([]DbCorzineCatalog, error)
-	DeleteCorzinaByTgID(ctx context.Context, tgId int64) error
-	DeleteCorzinaByTgIDandArticle(ctx context.Context, tgId int64, article int) error
+	AddShopCart(ctx context.Context, shopCart ShopCart) error
+	GetShopCartByTgID(ctx context.Context, tgId int64) ([]ShopCart, error)
+	GetShopCartByTgIdAndArticle(ctx context.Context, tgId int64, article int) (ShopCart, error)
+	UpdateShopCartByTgId(ctx context.Context, tgId int64, article int, quantity int) error
+	GetShopCartDetailByTgId(ctx context.Context, tgId int64) ([]DbCorzineCatalog, error)
+	DeleteShopCartByTgId(ctx context.Context, tgId int64) error
+	DeleteShopCartByTgIdAndArticle(ctx context.Context, tgId int64, article int) error
 }
 
 type StorageCorzina struct {
@@ -43,8 +47,8 @@ func NewStorageCorzina(db *sqlx.DB) *StorageCorzina {
 }
 
 type OrderStorager interface {
-	OrdersByTgID(ctx context.Context, tgId int64) ([]Orders, error)
-	AddOrders(ctx context.Context, order Orders) error
+	GetOrdersByTgID(ctx context.Context, tgId int64) ([]Orders, error)
+	AddOrder(ctx context.Context, order Orders) error
 }
 type StorageOrder struct {
 	OrderStorager

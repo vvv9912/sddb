@@ -9,7 +9,7 @@ type ExampleRequest struct {
 	Password string `json:"password_password" form:"password_password" query:"password_password"`
 }
 
-type Corzine struct {
+type ShopCart struct {
 	ID        int       `json:"id,omitempty"`
 	TgId      int64     `json:"tg_id,omitempty"`
 	Article   int       `json:"article,omitempty"` //В наличии
