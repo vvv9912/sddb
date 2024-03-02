@@ -10,7 +10,7 @@ CREATE TABLE orders (
     CREATED_AT timestamp NOT NULL DEFAULT (NOW() at time zone 'UTC+03'),
     UPDATE_AT timestamp NOT NULL DEFAULT (NOW() at time zone 'UTC+03')
 );
---update
+--update time
 CREATE OR REPLACE FUNCTION update_timestamp()
     RETURNS TRIGGER AS $$
 BEGIN
