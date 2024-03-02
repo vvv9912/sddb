@@ -56,7 +56,7 @@ func (s *ShopCartPostgresStorage) GetShopCartByTgID(ctx context.Context, tgId in
      			tg_id AS c_tg_id,
      			article AS c_article,
      			quantity AS c_quantity,
-     			CREATED_AT AS c_CREATED_AT
+     			CREATED_AT  AT TIME ZONE 'UTC'  AS c_CREATED_AT
 	 			FROM corzina
 	 			WHERE tg_id = $1`,
 		tgId); err != nil {
@@ -81,7 +81,7 @@ func (s *ShopCartPostgresStorage) GetShopCartByTgIdAndArticle(ctx context.Contex
      			tg_id AS c_tg_id,
      			article AS c_article,
      			quantity AS c_quantity,
-     			CREATED_AT AS c_CREATED_AT
+     			CREATED_AT  AT TIME ZONE 'UTC' AS c_CREATED_AT
 	 			FROM corzina
 	 			WHERE (tg_id = $1 and article = $2)`,
 		tgId, article)

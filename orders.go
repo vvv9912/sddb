@@ -47,8 +47,8 @@ func (s *OrdersPostgresStorage) GetOrdersByTgID(ctx context.Context, tgId int64)
      			pvz AS o_pvz,
      			type_dostavka AS o_type_dostavka,
      			orderr AS o_order,
-     			created_at AS o_created_at,
-     			update_at AS o_update_at
+     			created_at  AT TIME ZONE 'UTC' AS o_created_at,
+     			update_at  AT TIME ZONE 'UTC' AS o_update_at
 	 			FROM orders
 	 			WHERE tg_id = $1`,
 		tgId); err != nil {
@@ -127,8 +127,8 @@ func (s *OrdersPostgresStorage) GetOrderByStatus(ctx context.Context, statusOrde
      			pvz AS o_pvz,
      			type_dostavka AS o_type_dostavka,
      			orderr AS o_order,
-     			created_at AS o_created_at,
-     			update_at AS o_update_at
+     			created_at  AT TIME ZONE 'UTC' AS o_created_at,
+     			update_at  AT TIME ZONE 'UTC' AS o_update_at
 	 			FROM orders
 	 			WHERE status_order = $1`,
 		statusOrder); err != nil {
@@ -157,8 +157,8 @@ func (s *OrdersPostgresStorage) GetOrderByTimeAndStatus(ctx context.Context, sta
      			pvz AS o_pvz,
      			type_dostavka AS o_type_dostavka,
      			orderr AS o_order,
-     			created_at AS o_created_at,
-     				update_at AS o_update_at
+     			created_at  AT TIME ZONE 'UTC' AS o_created_at,
+     				update_at  AT TIME ZONE 'UTC' AS o_update_at
 	 			FROM orders
 	 		    WHERE status_order = $1 AND created_at > $2`,
 		statusOrder, time2); err != nil {
