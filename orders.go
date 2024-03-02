@@ -45,7 +45,7 @@ func (s *OrdersPostgresStorage) GetOrdersByTgID(ctx context.Context, tgId int64)
      			type_dostavka AS o_type_dostavka,
      			orderr AS o_order,
      			created_at AS o_created_at,
-     			read_at AS o_read_at
+     			update_at AS o_update_at
 	 			FROM orders
 	 			WHERE tg_id = $1`,
 		tgId); err != nil {
@@ -62,7 +62,7 @@ type dbOrder struct {
 	Pvz           string    `db:"o_pvz"`
 	Order         string    `db:"o_order"`
 	CreatedAt     time.Time `db:"o_created_at"`
-	ReadAt        time.Time `db:"o_read_at"`
+	UpdateAt      time.Time `db:"o_update_at"`
 	TypeDostavka  int       `db:"o_type_dostavka"`
 	PriceDelivery float64   `db:"o_price_delivery"`
 	PriceFull     float64   `db:"o_price_full"`
@@ -79,7 +79,7 @@ func (s *OrdersPostgresStorage) AddOrder(ctx context.Context, order Orders) erro
 
 	if _, err := tx.ExecContext(
 		ctx,
-		`INSERT INTO orders (tg_id, status_order,  orderr, created_at, read_at, pvz, type_dostavka)
+		`INSERT INTO orders (tg_id, status_order,  orderr, created_at, update_at, pvz, type_dostavka)
 	    				VALUES ($1, $2, $3, $4,$5,$6,$7)
 	    				ON CONFLICT DO NOTHING;`,
 		order.TgID,
@@ -87,7 +87,7 @@ func (s *OrdersPostgresStorage) AddOrder(ctx context.Context, order Orders) erro
 		//
 		order.Order,
 		order.CreatedAt,
-		order.ReadAt,
+		order.UpdateAt,
 		order.Pvz,
 		order.TypeDostavka,
 	); err != nil {
@@ -116,7 +116,7 @@ func (s *OrdersPostgresStorage) GetOrderByStatus(ctx context.Context, statusOrde
      			type_dostavka AS o_type_dostavka,
      			orderr AS o_order,
      			created_at AS o_created_at,
-     			read_at AS o_read_at
+     			update_at AS o_update_at
 	 			FROM orders
 	 			WHERE status_order = $1`,
 		statusOrder); err != nil {
@@ -143,7 +143,7 @@ func (s *OrdersPostgresStorage) GetOrderByTimeAndStatus(ctx context.Context, sta
      			type_dostavka AS o_type_dostavka,
      			orderr AS o_order,
      			created_at AS o_created_at,
-     			read_at AS o_read_at
+     				update_at AS o_update_at
 	 			FROM orders
 	 		    WHERE status_order = $1 AND created_at > $2`,
 		statusOrder, time2); err != nil {

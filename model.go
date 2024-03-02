@@ -24,7 +24,7 @@ type Orders struct {
 	Pvz           string    `json:"pvz,omitempty"`
 	Order         string    `json:"order,omitempty"` // структура из OrderCorz
 	CreatedAt     time.Time `json:"created_at"`
-	ReadAt        time.Time `json:"read_at"`
+	UpdateAt      time.Time `json:"update_at"`
 	TypeDostavka  int       `json:"type_dostavka"`
 	PriceDelivery float64   `json:"Price_Delivery"`
 	PriceFull     float64   `json:"Price_Full"`
