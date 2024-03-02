@@ -86,7 +86,7 @@ func (s *OrdersPostgresStorage) AddOrder(ctx context.Context, order Orders) erro
 	if _, err := tx.ExecContext(
 		ctx,
 		`INSERT INTO orders (tg_id, 	user_name,first_name,last_name,status_order,  orderr, created_at, update_at, pvz, type_dostavka)
-	    				VALUES ($1, $2, $3, $4,$5,$6,$7)
+	    				VALUES ($1, $2, $3, $4,$5,$6,$7,$8,$9,$10)
 	    				ON CONFLICT DO NOTHING;`,
 		order.TgID,
 		order.UserName,
