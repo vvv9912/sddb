@@ -43,7 +43,7 @@ type StorageCorzina struct {
 }
 
 func NewStorageCorzina(db *sqlx.DB) *StorageCorzina {
-	return &StorageCorzina{CorzinaStorager: NewCorzinaPostgresStorage(db)}
+	return &StorageCorzina{CorzinaStorager: NewShopCartPostgresStorage(db)}
 }
 
 type OrderStorager interface {

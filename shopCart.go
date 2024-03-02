@@ -11,7 +11,7 @@ type ShopCartPostgresStorage struct {
 	db *sqlx.DB
 }
 
-func NewCorzinaPostgresStorage(db *sqlx.DB) *ShopCartPostgresStorage {
+func NewShopCartPostgresStorage(db *sqlx.DB) *ShopCartPostgresStorage {
 	return &ShopCartPostgresStorage{db: db}
 }
 
