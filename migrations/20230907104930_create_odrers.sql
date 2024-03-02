@@ -3,6 +3,7 @@
 CREATE TABLE orders (
     id SERIAL primary key,
     tg_id integer,
+    user_name text,
     status_order integer,
     pvz jsonb,
     type_dostavka integer,

@@ -40,6 +40,7 @@ func (s *OrdersPostgresStorage) GetOrdersByTgID(ctx context.Context, tgId int64)
 		`SELECT
      			id AS o_id,
      			tg_id AS o_tg_id,
+	 			user_name AS o_user_name,
      			status_order AS o_status_order,
      			pvz AS o_pvz,
      			type_dostavka AS o_type_dostavka,
@@ -58,6 +59,7 @@ func (s *OrdersPostgresStorage) GetOrdersByTgID(ctx context.Context, tgId int64)
 type dbOrder struct {
 	ID            int       `db:"o_id"`
 	TgID          int64     `db:"o_tg_id"`
+	UserName      string    `db:"o_user_name"`
 	StatusOrder   int       `db:"o_status_order"`
 	Pvz           string    `db:"o_pvz"`
 	Order         string    `db:"o_order"`
@@ -79,10 +81,11 @@ func (s *OrdersPostgresStorage) AddOrder(ctx context.Context, order Orders) erro
 
 	if _, err := tx.ExecContext(
 		ctx,
-		`INSERT INTO orders (tg_id, status_order,  orderr, created_at, update_at, pvz, type_dostavka)
+		`INSERT INTO orders (tg_id, 	user_name,status_order,  orderr, created_at, update_at, pvz, type_dostavka)
 	    				VALUES ($1, $2, $3, $4,$5,$6,$7)
 	    				ON CONFLICT DO NOTHING;`,
 		order.TgID,
+		order.UserName,
 		order.StatusOrder,
 		//
 		order.Order,
@@ -111,6 +114,7 @@ func (s *OrdersPostgresStorage) GetOrderByStatus(ctx context.Context, statusOrde
 		`SELECT
      			id AS o_id,
      			tg_id AS o_tg_id,
+     				user_name AS o_user_name,
      			status_order AS o_status_order,
      			pvz AS o_pvz,
      			type_dostavka AS o_type_dostavka,
@@ -138,6 +142,7 @@ func (s *OrdersPostgresStorage) GetOrderByTimeAndStatus(ctx context.Context, sta
 		`SELECT
      			id AS o_id,
      			tg_id AS o_tg_id,
+     				user_name AS o_user_name,
      			status_order AS o_status_order,
      			pvz AS o_pvz,
      			type_dostavka AS o_type_dostavka,

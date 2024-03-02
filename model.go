@@ -20,6 +20,7 @@ type ShopCart struct {
 type Orders struct {
 	ID            int       `json:"id,omitempty"`
 	TgID          int64     `json:"tg_id,omitempty"`
+	UserName      string    `json:"user_name,omitempty"`
 	StatusOrder   int       `json:"status_order,omitempty"`
 	Pvz           string    `json:"pvz,omitempty"`
 	Order         string    `json:"order,omitempty"` // структура из OrderCorz
