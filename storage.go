@@ -93,7 +93,7 @@ func (s *ProductsPostgresStorage) ChangeProductByArticle(ctx context.Context, pr
 }
 
 // todo // Will use tg
-func (s *ProductsPostgresStorage) CatalogIsAvailable(ctx context.Context) ([]string, error) {
+func (s *ProductsPostgresStorage) GetCatalogNamesIsAvailable(ctx context.Context) ([]string, error) {
 
 	conn, err := s.db.Connx(ctx)
 	if err != nil {

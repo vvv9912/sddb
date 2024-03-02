@@ -9,7 +9,6 @@ import (
 
 func main() {
 
-	log.Println("Hello, World!")
 	database_dsn := "postgres://postgres:postgres@localhost:5432/tgbot?sslmode=disable"
 	db, err := sqlx.Connect("postgres", database_dsn)
 	if err != nil {
