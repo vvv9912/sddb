@@ -137,7 +137,7 @@ func (ts *PostrgresTestSuite) TestCatalog() {
 		Availability: false,
 	})
 	ts.NoError(err)
-	goods, err := ts.Catalog(context.Background())
+	goods, err := ts.GetCatalogNames(context.Background())
 	ts.NoError(err)
 
 	log.Println(goods)
