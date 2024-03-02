@@ -3,6 +3,7 @@ package sddb
 import (
 	"context"
 	"github.com/jmoiron/sqlx"
+	"time"
 )
 
 type ProductsStorager interface {
@@ -51,6 +52,11 @@ func NewStorageCorzina(db *sqlx.DB) *StorageCorzina {
 type OrderStorager interface {
 	GetOrdersByTgID(ctx context.Context, tgId int64) ([]Orders, error)
 	AddOrder(ctx context.Context, order Orders) error
+	GetOrderByStatus(ctx context.Context, statusOrder int) ([]Orders, error)
+
+	GetOrderByTimeAndStatus(ctx context.Context, statusOrder int, time2 time.Time) ([]Orders, error)
+
+	UpdateOrderByStatus(ctx context.Context, statusOrder int, orderID int) error
 }
 type StorageOrder struct {
 	OrderStorager

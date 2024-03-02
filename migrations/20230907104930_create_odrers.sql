@@ -7,8 +7,8 @@ CREATE TABLE orders (
     pvz jsonb,
     type_dostavka integer,
     orderr text,
-    CREATED_AT timestamp NOT NULL DEFAULT (NOW() at time zone 'UTC'),
-    READ_AT timestamp NOT NULL DEFAULT (NOW() at time zone 'UTC')
+    CREATED_AT timestamp NOT NULL DEFAULT (NOW() at time zone 'UTC+03'),
+    READ_AT timestamp NOT NULL DEFAULT (NOW() at time zone 'UTC+03')
 );
 -- +goose StatementEnd
 

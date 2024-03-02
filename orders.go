@@ -8,6 +8,17 @@ import (
 	"time"
 )
 
+const (
+	StatusOrderNew        = 1 //заказ новый
+	StatusOrderRead       = 2 //заказ принят
+	StatusOrderProcessing = 3 //заказ обрабатывается
+	StatusOrderProcessed  = 4 //заказ обработан
+	StatusOrderDelivered  = 5 //заказ доставляется
+	StatusOrderCanceled   = 6 //заказ отменен
+	StatusOrderReturned   = 7 //заказ возвращен
+	StatusOrderComplete   = 8 //заказ выполнен
+)
+
 type OrdersPostgresStorage struct {
 	db *sqlx.DB
 }
@@ -83,6 +94,76 @@ func (s *OrdersPostgresStorage) AddOrder(ctx context.Context, order Orders) erro
 		return err
 	}
 	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func (s *OrdersPostgresStorage) GetOrderByStatus(ctx context.Context, statusOrder int) ([]Orders, error) {
+	conn, err := s.db.Connx(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+	var corzine []dbOrder
+	if err := conn.SelectContext(ctx,
+		&corzine,
+		`SELECT
+     			id AS o_id,
+     			tg_id AS o_tg_id,
+     			status_order AS o_status_order,
+     			pvz AS o_pvz,
+     			type_dostavka AS o_type_dostavka,
+     			orderr AS o_order,
+     			created_at AS o_created_at,
+     			read_at AS o_read_at
+	 			FROM orders
+	 			WHERE status_order = $1`,
+		statusOrder); err != nil {
+		return nil, err
+	}
+
+	return lo.Map(corzine, func(corzin dbOrder, _ int) Orders { return Orders(corzin) }), nil
+}
+
+func (s *OrdersPostgresStorage) GetOrderByTimeAndStatus(ctx context.Context, statusOrder int, time2 time.Time) ([]Orders, error) {
+	conn, err := s.db.Connx(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+	var corzine []dbOrder
+	if err := conn.SelectContext(ctx,
+		&corzine,
+		`SELECT
+     			id AS o_id,
+     			tg_id AS o_tg_id,
+     			status_order AS o_status_order,
+     			pvz AS o_pvz,
+     			type_dostavka AS o_type_dostavka,
+     			orderr AS o_order,
+     			created_at AS o_created_at,
+     			read_at AS o_read_at
+	 			FROM orders
+	 		    WHERE status_order = $1 AND created_at > $2`,
+		statusOrder, time2); err != nil {
+		return nil, err
+	}
+
+	return lo.Map(corzine, func(corzin dbOrder, _ int) Orders { return Orders(corzin) }), nil
+}
+func (s *OrdersPostgresStorage) UpdateOrderByStatus(ctx context.Context, statusOrder int, orderID int) error {
+	conn, err := s.db.Connx(ctx)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+	_, err = conn.ExecContext(ctx,
+		`UPDATE orders
+	 SET status_order = $1
+	 WHERE id = $2`,
+		statusOrder, orderID)
+
 	if err != nil {
 		return err
 	}

@@ -5,7 +5,7 @@ CREATE TABLE users (
     tg_id integer NOT NULL , --tg id
     status_user integer NOT NULL ,
     state_user integer NOT NULL ,
-    CREATED_AT timestamp NOT NULL DEFAULT (NOW() at time zone 'UTC')
+    CREATED_AT timestamp NOT NULL DEFAULT (NOW() at time zone 'UTC+03')
 );
 
 -- +goose StatementEnd
