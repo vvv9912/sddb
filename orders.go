@@ -136,12 +136,8 @@ func (s *OrdersPostgresStorage) GetOrderByTimeAndStatus(ctx context.Context, sta
 	return corzine, nil
 }
 func (s *OrdersPostgresStorage) UpdateOrderByStatus(ctx context.Context, statusOrder int, orderID int) error {
-	conn, err := s.db.Connx(ctx)
-	if err != nil {
-		return err
-	}
-	defer conn.Close()
-	_, err = conn.ExecContext(ctx,
+
+	_, err := s.db.ExecContext(ctx,
 		`UPDATE orders
 	 SET status_order = $1
 	 WHERE id = $2`,
