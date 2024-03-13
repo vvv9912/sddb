@@ -108,7 +108,7 @@ func (s *OrdersPostgresStorage) clean(ctx context.Context) error {
 	Newctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
-	_, err := s.db.ExecContext(Newctx, "DELETE FROM products")
+	_, err := s.db.ExecContext(Newctx, "DELETE FROM orders")
 	return err
 }
 
@@ -124,9 +124,9 @@ func (ts *PostrgresTestSuiteOrder) TestAddOrderGetOrder() {
 	order := Orders{
 		ID:            1,
 		TgID:          1,
-		UserName:      "11",
-		FirstName:     "22",
-		LastName:      "33",
+		UserName:      "nn",
+		FirstName:     "2nn2",
+		LastName:      "n",
 		StatusOrder:   2,
 		Pvz:           "33",
 		Order:         "444",
@@ -151,4 +151,39 @@ func (ts *PostrgresTestSuiteOrder) TestAddOrderGetOrder() {
 	getOrders[0].CreatedAt = t
 	ts.Require().Equal(order, getOrders[0], "getOrders[0] != order")
 
+	ts.clean(context.Background())
+
+}
+func (ts *PostrgresTestSuiteOrder) TestGetOrderByStatus() {
+	order := Orders{
+		ID:            2,
+		TgID:          1,
+		UserName:      "11",
+		FirstName:     "22",
+		LastName:      "33",
+		StatusOrder:   2,
+		Pvz:           "33",
+		Order:         "444",
+		CreatedAt:     time.Now(),
+		UpdateAt:      time.Now(),
+		TypeDostavka:  0,
+		PriceDelivery: 0,
+		PriceFull:     0,
+	}
+	t := time.Now()
+	err := ts.AddOrder(context.Background(), order)
+	ts.NoError(err)
+	getOrders, err := ts.GetOrderByStatus(context.Background(), 2)
+	ts.NoError(err)
+	if len(getOrders) > 1 {
+		ts.T().Error("len(getOrders) > 1")
+	}
+	order.UpdateAt = t
+	order.CreatedAt = t
+
+	getOrders[0].UpdateAt = t
+	getOrders[0].CreatedAt = t
+	ts.Require().Equal(order, getOrders[0], "getOrders[0] != order")
+
+	ts.clean(context.Background())
 }
