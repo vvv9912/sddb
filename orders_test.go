@@ -98,7 +98,7 @@ func (ts *PostrgresTestSuiteOrder) TearDownSuite() {
 	require.NoError(ts.T(), ts.tc.Terminate(ctx))
 }
 
-func TestPostgres(t *testing.T) {
+func TestPostgresOrders(t *testing.T) {
 	suite.Run(t, new(PostrgresTestSuiteOrder))
 }
 

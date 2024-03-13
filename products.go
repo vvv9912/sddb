@@ -3,10 +3,8 @@ package sddb
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
-	"log"
 )
 
 type ProductsPostgresStorage struct {
@@ -19,15 +17,9 @@ func NewProductsPostgresStorage(db *sqlx.DB) *ProductsPostgresStorage {
 	return &ProductsPostgresStorage{db: db}
 }
 
-// use tg
 func (s *ProductsPostgresStorage) AddProduct(ctx context.Context, product Products) error {
-	conn, err := s.db.Connx(ctx)
-	if err != nil {
-		return err
-	}
-	defer conn.Close()
 
-	if _, err := conn.ExecContext(
+	if _, err := s.db.ExecContext(
 		ctx,
 		`INSERT INTO products (article, catalog, name, description, photo_url, price, length, width, heigth, weight,available)
 	    				VALUES ($1, $2, $3,$4, $5, $6,$7, $8, $9, $10,$11)
@@ -47,19 +39,13 @@ func (s *ProductsPostgresStorage) AddProduct(ctx context.Context, product Produc
 	); err != nil {
 		return err
 	}
-	log.Println("insert BD:", product.Article, product.Name, "len:photo", len(product.PhotoUrl))
+
 	return nil
 }
 
-// no use tg
 func (s *ProductsPostgresStorage) ChangeProductByArticle(ctx context.Context, product Products) error {
-	conn, err := s.db.Connx(ctx)
-	if err != nil {
-		return err
-	}
-	defer conn.Close()
 
-	result, err := conn.ExecContext(
+	result, err := s.db.ExecContext(
 		ctx,
 		`UPDATE products SET catalog = $2, name = $3, description = $4, photo_url = $5, price = $6, length = $7, width = $8, heigth = $9, weight = $10, available = $11
 	    				WHERE article = $1`,
@@ -74,66 +60,45 @@ func (s *ProductsPostgresStorage) ChangeProductByArticle(ctx context.Context, pr
 		product.Height,
 		product.Weight,
 		product.Availability,
-		//users.CreatedAt,
 	)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	if rowsAffected == 0 {
 		return errorsArticleNotFound
 	}
-	log.Println("update BD:", product.Article, product.Name, "len:photo", len(product.PhotoUrl))
+
 	return nil
 }
 
-// todo // Will use tg
 func (s *ProductsPostgresStorage) GetCatalogNamesIsAvailable(ctx context.Context) ([]string, error) {
-
-	conn, err := s.db.Connx(ctx)
-	if err != nil {
-		return nil, err
-	}
-	defer conn.Close()
 	var catalog []string
-	if err := conn.SelectContext(ctx, &catalog, `SELECT DISTINCT catalog FROM products where available = true`); err != nil {
+
+	if err := s.db.SelectContext(ctx, &catalog, `SELECT DISTINCT catalog FROM products where available = true`); err != nil {
 		return nil, err
 	}
 
 	return catalog, nil
 }
 
-// use tg
 func (s *ProductsPostgresStorage) GetCatalogNames(ctx context.Context) ([]string, error) {
 
-	conn, err := s.db.Connx(ctx)
-	if err != nil {
-		return nil, err
-	}
-	defer conn.Close()
 	var catalog []string
-	if err := conn.SelectContext(ctx, &catalog, `SELECT DISTINCT catalog FROM products`); err != nil {
+	if err := s.db.SelectContext(ctx, &catalog, `SELECT DISTINCT catalog FROM products`); err != nil {
 		return nil, err
 	}
 
 	return catalog, nil
 }
 
-// no use tg
 func (s *ProductsPostgresStorage) GetAllProducts(ctx context.Context) ([]Products, error) {
-	conn, err := s.db.Connx(ctx)
-	if err != nil {
-		return nil, err
-	}
-	defer conn.Close()
-	//var products []model.Products
+
 	var getProducts []getdbProduct
-	if err := conn.SelectContext(ctx,
+	if err := s.db.SelectContext(ctx,
 		&getProducts,
 		`SELECT
      article AS a_article,
@@ -152,17 +117,16 @@ func (s *ProductsPostgresStorage) GetAllProducts(ctx context.Context) ([]Product
 	); err != nil {
 		return nil, err
 	}
-	// Создайте срез для хранения данных в формате dbProduct
+
 	var products []Products
 
 	for _, getProduct := range getProducts {
-		// Преобразуйте PhotoUrl из pq.ByteaArray в [][]byte
+
 		var photoUrls [][]byte
 		for _, byteData := range getProduct.PhotoUrl {
 			photoUrls = append(photoUrls, []byte(byteData))
 		}
 
-		// Создайте экземпляр dbProduct и заполните его данными
 		product := Products{
 			Article:      getProduct.Article,
 			Catalog:      getProduct.Catalog,
@@ -177,23 +141,17 @@ func (s *ProductsPostgresStorage) GetAllProducts(ctx context.Context) ([]Product
 			Availability: getProduct.Availability,
 		}
 
-		// Добавьте созданный экземпляр в срез products
 		products = append(products, product)
 	}
-	//return lo.Map(products, func(product dbProduct, _ int) model.Products { return model.Products(product) }), nil
+
 	return products, nil
 }
 
-// use tg
 func (s *ProductsPostgresStorage) GetProductsByCatalogIsAvailable(ctx context.Context, ctlg string) ([]Products, error) {
-	conn, err := s.db.Connx(ctx)
-	if err != nil {
-		return nil, err
-	}
-	defer conn.Close()
-	//var products []model.Products
+
 	var getProducts []getdbProduct
-	if err := conn.SelectContext(ctx,
+
+	if err := s.db.SelectContext(ctx,
 		&getProducts,
 		`SELECT
        article AS a_article,
@@ -212,17 +170,16 @@ func (s *ProductsPostgresStorage) GetProductsByCatalogIsAvailable(ctx context.Co
 		ctlg); err != nil {
 		return nil, err
 	}
-	// Создайте срез для хранения данных в формате dbProduct
+
 	var products []Products
 
 	for _, getProduct := range getProducts {
-		// Преобразуйте PhotoUrl из pq.ByteaArray в [][]byte
+
 		var photoUrls [][]byte
 		for _, byteData := range getProduct.PhotoUrl {
 			photoUrls = append(photoUrls, []byte(byteData))
 		}
 
-		// Создайте экземпляр dbProduct и заполните его данными
 		product := Products{
 			Article:      getProduct.Article,
 			Catalog:      getProduct.Catalog,
@@ -237,23 +194,17 @@ func (s *ProductsPostgresStorage) GetProductsByCatalogIsAvailable(ctx context.Co
 			Availability: getProduct.Availability,
 		}
 
-		// Добавьте созданный экземпляр в срез products
 		products = append(products, product)
 	}
-	//return lo.Map(products, func(product dbProduct, _ int) model.Products { return model.Products(product) }), nil
+
 	return products, nil
 }
 
-// use tg
 func (s *ProductsPostgresStorage) GetProductsByCatalog(ctx context.Context, ctlg string) ([]Products, error) {
-	conn, err := s.db.Connx(ctx)
-	if err != nil {
-		return nil, err
-	}
-	defer conn.Close()
-	//var products []model.Products
+
+	//var products []Products
 	var getProducts []getdbProduct
-	if err := conn.SelectContext(ctx,
+	if err := s.db.SelectContext(ctx,
 		&getProducts,
 		`SELECT
      article AS a_article,
@@ -267,17 +218,16 @@ func (s *ProductsPostgresStorage) GetProductsByCatalog(ctx context.Context, ctlg
 		ctlg); err != nil {
 		return nil, err
 	}
-	// Создайте срез для хранения данных в формате dbProduct
+
 	var products []Products
 
 	for _, getProduct := range getProducts {
-		// Преобразуйте PhotoUrl из pq.ByteaArray в [][]byte
+
 		var photoUrls [][]byte
 		for _, byteData := range getProduct.PhotoUrl {
 			photoUrls = append(photoUrls, []byte(byteData))
 		}
 
-		// Создайте экземпляр dbProduct и заполните его данными
 		product := Products{
 			Article:     getProduct.Article,
 			Catalog:     getProduct.Catalog,
@@ -291,23 +241,16 @@ func (s *ProductsPostgresStorage) GetProductsByCatalog(ctx context.Context, ctlg
 			Weight:      getProduct.Weight,
 		}
 
-		// Добавьте созданный экземпляр в срез products
 		products = append(products, product)
 	}
-	//return lo.Map(products, func(product dbProduct, _ int) model.Products { return model.Products(product) }), nil
+
 	return products, nil
 }
 
-// use tg
 func (s *ProductsPostgresStorage) GetProductByArticle(ctx context.Context, article int) (Products, error) {
-	conn, err := s.db.Connx(ctx)
-	if err != nil {
-		return Products{}, err
-	}
-	defer conn.Close()
-	//var products []model.Products
+
 	var products dbProduct
-	row := conn.QueryRowContext(ctx,
+	row := s.db.QueryRowContext(ctx,
 		`SELECT
      			article AS c_article,
      			catalog AS c_catalog,
@@ -322,8 +265,10 @@ func (s *ProductsPostgresStorage) GetProductByArticle(ctx context.Context, artic
 	 			FROM products
 	 			WHERE (article = $1)`,
 		article)
+
 	var photoUrl pq.ByteaArray
-	err = row.Scan(
+
+	err := row.Scan(
 		&products.Article,
 		&products.Catalog,
 		&products.Name,
@@ -334,10 +279,13 @@ func (s *ProductsPostgresStorage) GetProductByArticle(ctx context.Context, artic
 		&products.Width,
 		&products.Height,
 		&products.Weight)
+
 	if err != nil {
 		return Products{}, err
 	}
+
 	products.PhotoUrl = photoUrl
+
 	return Products{
 		Article:     products.Article,
 		Catalog:     products.Catalog,
@@ -350,6 +298,7 @@ func (s *ProductsPostgresStorage) GetProductByArticle(ctx context.Context, artic
 		Height:      products.Height,
 		Weight:      products.Weight,
 	}, err
+
 }
 
 type dbProduct struct {
