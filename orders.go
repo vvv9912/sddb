@@ -76,8 +76,6 @@ type dbOrder struct {
 
 // use tg
 func (s *OrdersPostgresStorage) AddOrder(ctx context.Context, order Orders) error {
-	//conn, err := s.db.Connx(ctx)
-	// &sql.TxOptions{Isolation: sql.LevelSerializable}
 	tx, err := s.db.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
 	if err != nil {
 		return err
@@ -85,7 +83,7 @@ func (s *OrdersPostgresStorage) AddOrder(ctx context.Context, order Orders) erro
 
 	if _, err := tx.ExecContext(
 		ctx,
-		`INSERT INTO orders (tg_id, 	user_name,first_name,last_name,status_order,  orderr, created_at, update_at, pvz, type_dostavka)
+		`INSERT INTO orders (tg_id,user_name,first_name,last_name,status_order,  orderr, update_at, pvz, type_dostavka)
 	    				VALUES ($1, $2, $3, $4,$5,$6,$7,$8,$9,$10)
 	    				ON CONFLICT DO NOTHING;`,
 		order.TgID,
@@ -95,7 +93,6 @@ func (s *OrdersPostgresStorage) AddOrder(ctx context.Context, order Orders) erro
 		order.StatusOrder,
 		//
 		order.Order,
-		order.CreatedAt,
 		order.UpdateAt,
 		order.Pvz,
 		order.TypeDostavka,

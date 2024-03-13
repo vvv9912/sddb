@@ -121,25 +121,154 @@ func (ts *PostrgresTestSuite) TearDownTest() {
 	ts.Require().NoError(ts.clean(context.Background()))
 }
 
-func (ts *PostrgresTestSuite) TestCatalog() {
+func (ts *PostrgresTestSuite) TestAddProduct() {
 
-	err := ts.AddProduct(context.Background(), Products{
+	products := Products{
 		Article:      1,
 		Catalog:      "Test Catalog",
 		Name:         "Name",
 		Description:  "Descrip",
-		PhotoUrl:     nil,
+		PhotoUrl:     [][]byte{{1}, {2}, {3}},
+		Price:        144,
+		Length:       1,
+		Width:        1,
+		Height:       1,
+		Weight:       1,
+		Availability: true,
+	}
+	err := ts.AddProduct(context.Background(), products)
+	ts.NoError(err)
+	goods, err := ts.GetAllProducts(context.Background())
+	// ts.GetCatalogNames(context.Background())
+	ts.NoError(err)
+
+	if len(goods) > 1 {
+		ts.T().Error("len(goods) > 1")
+	}
+	ts.Require().Equal(products, goods[0], "goods[0] != products")
+	//	log.Println(goods)
+	//ts.Require().NoError(ts.clean(context.Background()))
+}
+func (ts *PostrgresTestSuite) TestGetProductsByCatalogIsAvailable() {
+
+	products1 := Products{
+		Article:      2,
+		Catalog:      "Test Catalog",
+		Name:         "Name",
+		Description:  "Descrip",
+		PhotoUrl:     [][]byte{{1}, {2}, {3}},
+		Price:        144,
+		Length:       1,
+		Width:        1,
+		Height:       1,
+		Weight:       1,
+		Availability: true,
+	}
+	products2 := Products{
+		Article:      1,
+		Catalog:      "Test Catalog",
+		Name:         "Name",
+		Description:  "Descrip",
+		PhotoUrl:     [][]byte{{1}, {2}, {3}},
 		Price:        144,
 		Length:       1,
 		Width:        1,
 		Height:       1,
 		Weight:       1,
 		Availability: false,
-	})
+	}
+	err := ts.AddProduct(context.Background(), products1)
 	ts.NoError(err)
-	goods, err := ts.GetCatalogNames(context.Background())
+	err = ts.AddProduct(context.Background(), products2)
+	ts.NoError(err)
+	goods, err := ts.GetProductsByCatalogIsAvailable(context.Background(), "Test Catalog")
 	ts.NoError(err)
 
-	log.Println(goods)
+	if len(goods) > 1 {
+		ts.T().Error("len(goods) > 1")
+	}
+	ts.Require().Equal(products1, goods[0], "goods[0] != products")
+	//	log.Println(goods)
+	//ts.Require().NoError(ts.clean(context.Background()))
+}
+func (ts *PostrgresTestSuite) TestGetProductByArticle() {
+
+	products1 := Products{
+		Article:      2,
+		Catalog:      "Test Catalog",
+		Name:         "Name",
+		Description:  "Descrip",
+		PhotoUrl:     [][]byte{{1}, {2}, {3}},
+		Price:        144,
+		Length:       1,
+		Width:        1,
+		Height:       1,
+		Weight:       1,
+		Availability: true,
+	}
+	products2 := Products{
+		Article:      1,
+		Catalog:      "Test Catalog",
+		Name:         "Name",
+		Description:  "Descrip",
+		PhotoUrl:     [][]byte{{1}, {2}, {3}},
+		Price:        144,
+		Length:       1,
+		Width:        1,
+		Height:       1,
+		Weight:       1,
+		Availability: false,
+	}
+	err := ts.AddProduct(context.Background(), products1)
+	ts.NoError(err)
+	err = ts.AddProduct(context.Background(), products2)
+	ts.NoError(err)
+	goods, err := ts.GetProductByArticle(context.Background(), 1)
+	ts.NoError(err)
+
+	ts.Require().Equal(products2, goods, "goods != products")
+	//	log.Println(goods)
+	//ts.Require().NoError(ts.clean(context.Background()))
+}
+
+func (ts *PostrgresTestSuite) TestChangeProductByArticle() {
+
+	products1 := Products{
+		Article:      1,
+		Catalog:      "Test Catalog11",
+		Name:         "Name11",
+		Description:  "Descrip",
+		PhotoUrl:     [][]byte{{1}, {2}, {3}},
+		Price:        144,
+		Length:       1,
+		Width:        1,
+		Height:       1,
+		Weight:       1,
+		Availability: true,
+	}
+	products2 := Products{
+		Article:      1,
+		Catalog:      "Test Catalog22",
+		Name:         "Name22",
+		Description:  "Descrip22",
+		PhotoUrl:     [][]byte{{1}, {2}, {3}},
+		Price:        122,
+		Length:       2,
+		Width:        2,
+		Height:       2,
+		Weight:       2,
+		Availability: false,
+	}
+	err := ts.AddProduct(context.Background(), products1)
+	ts.NoError(err)
+
+	err = ts.ChangeProductByArticle(context.Background(), products2)
+	ts.NoError(err)
+
+	goods, err := ts.GetProductByArticle(context.Background(), 1)
+	ts.NoError(err)
+
+	ts.Require().Equal(products2, goods, "goods != products")
+	//	log.Println(goods)
 	//ts.Require().NoError(ts.clean(context.Background()))
 }

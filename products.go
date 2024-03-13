@@ -146,7 +146,7 @@ func (s *ProductsPostgresStorage) GetAllProducts(ctx context.Context) ([]Product
      width  AS a_width,
      heigth  AS a_height,
      weight  AS a_weight,
-    availability as a_availability
+    available as a_available
 	 FROM products
 	 ORDER BY article asc;`,
 	); err != nil {
@@ -196,12 +196,17 @@ func (s *ProductsPostgresStorage) GetProductsByCatalogIsAvailable(ctx context.Co
 	if err := conn.SelectContext(ctx,
 		&getProducts,
 		`SELECT
-     article AS a_article,
+       article AS a_article,
      catalog AS a_catalog,
      name AS a_name,
      description AS a_description,
      photo_url AS a_photo_url,
-     price AS a_price
+     price AS a_price,
+     length AS a_length,
+     width  AS a_width,
+     heigth  AS a_height,
+     weight  AS a_weight,
+    available as a_available
 	 FROM products
 	 WHERE catalog = $1 and available = true`,
 		ctlg); err != nil {
@@ -219,16 +224,17 @@ func (s *ProductsPostgresStorage) GetProductsByCatalogIsAvailable(ctx context.Co
 
 		// Создайте экземпляр dbProduct и заполните его данными
 		product := Products{
-			Article:     getProduct.Article,
-			Catalog:     getProduct.Catalog,
-			Name:        getProduct.Name,
-			Description: getProduct.Description,
-			PhotoUrl:    photoUrls,
-			Price:       getProduct.Price,
-			Length:      getProduct.Length,
-			Width:       getProduct.Width,
-			Height:      getProduct.Height,
-			Weight:      getProduct.Weight,
+			Article:      getProduct.Article,
+			Catalog:      getProduct.Catalog,
+			Name:         getProduct.Name,
+			Description:  getProduct.Description,
+			PhotoUrl:     photoUrls,
+			Price:        getProduct.Price,
+			Length:       getProduct.Length,
+			Width:        getProduct.Width,
+			Height:       getProduct.Height,
+			Weight:       getProduct.Weight,
+			Availability: getProduct.Availability,
 		}
 
 		// Добавьте созданный экземпляр в срез products
