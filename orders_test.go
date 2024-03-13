@@ -20,7 +20,7 @@ type testStoragerOrder interface {
 	clean(ctx context.Context) error
 }
 
-type config struct {
+type сonfig struct {
 	ConnectTimeout time.Duration
 	QueryTimeout   time.Duration
 	Username       string
@@ -37,11 +37,11 @@ type PostrgresTestSuiteOrder struct {
 	testStoragerOrder
 
 	tc  *tcpostgres.PostgresContainer
-	cfg *config
+	cfg *сonfig
 }
 
 func (ts *PostrgresTestSuiteOrder) SetupSuite() {
-	cfg := &config{
+	cfg := &сonfig{
 		ConnectTimeout: 5 * time.Second,
 		QueryTimeout:   5 * time.Second,
 		Username:       "postgres",
@@ -98,8 +98,8 @@ func (ts *PostrgresTestSuiteOrder) TearDownSuite() {
 	require.NoError(ts.T(), ts.tc.Terminate(ctx))
 }
 
-func testPostgres(t *testing.T) {
-	suite.Run(t, new(PostrgresTestSuite))
+func TestPostgres(t *testing.T) {
+	suite.Run(t, new(PostrgresTestSuiteOrder))
 }
 
 func (ts *PostrgresTestSuiteOrder) testDummy() {}
@@ -136,7 +136,7 @@ func (ts *PostrgresTestSuiteOrder) TestAddOrderGetOrder() {
 		PriceDelivery: 0,
 		PriceFull:     0,
 	}
-
+	t := time.Now()
 	err := ts.AddOrder(context.Background(), order)
 	ts.NoError(err)
 	getOrders, err := ts.GetOrdersByTgID(context.Background(), 1)
@@ -144,6 +144,11 @@ func (ts *PostrgresTestSuiteOrder) TestAddOrderGetOrder() {
 	if len(getOrders) >= 1 {
 		ts.T().Error("len(getOrders) > 1")
 	}
+	order.UpdateAt = t
+	order.CreatedAt = t
+
+	getOrders[0].UpdateAt = t
+	getOrders[0].CreatedAt = t
 	ts.Require().Equal(order, getOrders[0], "getOrders[0] != order")
 
 }

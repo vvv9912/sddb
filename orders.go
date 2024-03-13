@@ -47,8 +47,8 @@ func (s *OrdersPostgresStorage) GetOrdersByTgID(ctx context.Context, tgId int64)
      			pvz AS o_pvz,
      			type_dostavka AS o_type_dostavka,
      			orderr AS o_order,
-     			created_at  AT TIME ZONE 'UTC' AS o_created_at,
-     			update_at  AT TIME ZONE 'UTC' AS o_update_at
+     			created_at  AS o_created_at,
+     			update_at   AS o_update_at
 	 			FROM orders
 	 			WHERE tg_id = $1`,
 		tgId); err != nil {
@@ -84,7 +84,7 @@ func (s *OrdersPostgresStorage) AddOrder(ctx context.Context, order Orders) erro
 	if _, err := tx.ExecContext(
 		ctx,
 		`INSERT INTO orders (tg_id,user_name,first_name,last_name,status_order,  orderr, update_at, pvz, type_dostavka)
-	    				VALUES ($1, $2, $3, $4,$5,$6,$7,$8,$9,$10)
+	    				VALUES ($1, $2, $3, $4,$5,$6,$7,$8,$9)
 	    				ON CONFLICT DO NOTHING;`,
 		order.TgID,
 		order.UserName,
