@@ -18,19 +18,19 @@ type ShopCart struct {
 }
 
 type Orders struct {
-	ID            int       `json:"id,omitempty"`
-	TgID          int64     `json:"tg_id,omitempty"`
-	UserName      string    `json:"user_name,omitempty"`
-	FirstName     string    `json:"first_name,omitempty"`
-	LastName      string    `json:"last_name,omitempty"`
-	StatusOrder   int       `json:"status_order,omitempty"`
-	Pvz           string    `json:"pvz,omitempty"`
-	Order         string    `json:"order,omitempty"` // структура из OrderCorz
-	CreatedAt     time.Time `json:"created_at"`
-	UpdateAt      time.Time `json:"update_at"`
-	TypeDostavka  int       `json:"type_dostavka"`
-	PriceDelivery float64   `json:"Price_Delivery"`
-	PriceFull     float64   `json:"Price_Full"`
+	ID            int       `json:"id,omitempty" db:"id"`
+	TgID          int64     `json:"tg_id,omitempty" db:"tg_id"`
+	UserName      string    `json:"user_name,omitempty" db:"user_name"`
+	FirstName     string    `json:"first_name,omitempty" db:"first_name"`
+	LastName      string    `json:"last_name,omitempty" db:"last_name"`
+	StatusOrder   int       `json:"status_order,omitempty" db:"status_order"`
+	Pvz           string    `json:"pvz,omitempty" db:"pvz"`
+	Order         string    `json:"order,omitempty" db:"orderr"` // структура из OrderCorz
+	CreatedAt     time.Time `json:"created_at" db:"created_at"`
+	UpdateAt      time.Time `json:"update_at" db:"update_at"`
+	TypeDostavka  int       `json:"type_dostavka" db:"type_dostavka"`
+	PriceDelivery float64   `json:"Price_Delivery" db:"price_delivery"`
+	PriceFull     float64   `json:"Price_Full" db:"price_full"`
 }
 type OrderCorz struct {
 	ID       int     `json:"id,omitempty"`

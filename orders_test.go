@@ -141,7 +141,7 @@ func (ts *PostrgresTestSuiteOrder) TestAddOrderGetOrder() {
 	ts.NoError(err)
 	getOrders, err := ts.GetOrdersByTgID(context.Background(), 1)
 	ts.NoError(err)
-	if len(getOrders) >= 1 {
+	if len(getOrders) > 1 {
 		ts.T().Error("len(getOrders) > 1")
 	}
 	order.UpdateAt = t

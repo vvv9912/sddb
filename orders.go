@@ -28,34 +28,61 @@ func NewOrdersPostgresStorage(db *sqlx.DB) *OrdersPostgresStorage {
 }
 
 // use tg
+//
+//	func (s *OrdersPostgresStorage) GetOrdersByTgID(ctx context.Context, tgId int64) ([]Orders, error) {
+//		conn, err := s.db.Connx(ctx)
+//		if err != nil {
+//			return nil, err
+//		}
+//		defer conn.Close()
+//		var corzine []dbOrder
+//		if err := conn.SelectContext(ctx,
+//			&corzine,
+//			`SELECT
+//	    			id AS o_id,
+//	    			tg_id AS o_tg_id,
+//		 			user_name AS o_user_name,
+//		 			first_name AS o_first_name,
+//		 			last_name AS o_last_name,
+//	    			status_order AS o_status_order,
+//	    			pvz AS o_pvz,
+//	    			type_dostavka AS o_type_dostavka,
+//	    			orderr AS o_order,
+//	    			created_at  AS o_created_at,
+//	    			update_at   AS o_update_at
+//		 			FROM orders
+//		 			WHERE tg_id = $1`,
+//			tgId); err != nil {
+//			return nil, err
+//		}
+//		//return lo.Map(corzine, func(corzin dbCorzine, _ int) model.Corzine { return model.Corzine(corzin) }), nil
+//		return lo.Map(corzine, func(corzin dbOrder, _ int) Orders { return Orders(corzin) }), nil
+//	}
 func (s *OrdersPostgresStorage) GetOrdersByTgID(ctx context.Context, tgId int64) ([]Orders, error) {
-	conn, err := s.db.Connx(ctx)
-	if err != nil {
-		return nil, err
-	}
-	defer conn.Close()
-	var corzine []dbOrder
-	if err := conn.SelectContext(ctx,
+
+	var corzine []Orders
+
+	if err := s.db.SelectContext(ctx,
 		&corzine,
 		`SELECT
-     			id AS o_id,
-     			tg_id AS o_tg_id,
-	 			user_name AS o_user_name,
-	 			first_name AS o_first_name,
-	 			last_name AS o_last_name,
-     			status_order AS o_status_order,
-     			pvz AS o_pvz,
-     			type_dostavka AS o_type_dostavka,
-     			orderr AS o_order,
-     			created_at  AS o_created_at,
-     			update_at   AS o_update_at
+     			id ,
+     			tg_id ,
+	 			user_name ,
+	 			first_name ,
+	 			last_name ,
+     			status_order ,
+     			pvz ,
+     			type_dostavka ,
+     			orderr,
+     			created_at  ,
+     			update_at 
 	 			FROM orders
 	 			WHERE tg_id = $1`,
 		tgId); err != nil {
 		return nil, err
 	}
-	//return lo.Map(corzine, func(corzin dbCorzine, _ int) model.Corzine { return model.Corzine(corzin) }), nil
-	return lo.Map(corzine, func(corzin dbOrder, _ int) Orders { return Orders(corzin) }), nil
+
+	return corzine, nil
 }
 
 type dbOrder struct {
