@@ -23,7 +23,6 @@ func (s *UsersPostgresStorage) AddUser(ctx context.Context, users Users) error {
 		users.TgID,
 		users.StatusUser,
 		users.StateUser,
-		//users.CreatedAt,
 	); err != nil {
 		return err
 	}
