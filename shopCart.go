@@ -15,15 +15,9 @@ func NewShopCartPostgresStorage(db *sqlx.DB) *ShopCartPostgresStorage {
 	return &ShopCartPostgresStorage{db: db}
 }
 
-// use tg
 func (s *ShopCartPostgresStorage) AddShopCart(ctx context.Context, shop ShopCart) error {
-	conn, err := s.db.Connx(ctx) //delete
-	if err != nil {
-		return err
-	}
-	defer conn.Close()
 
-	if _, err := conn.ExecContext(
+	if _, err := s.db.ExecContext(
 		ctx,
 		`INSERT INTO corzina (tg_id, article,quantity,CREATED_AT)
 	    				VALUES ($1, $2, $3, $4)
@@ -39,17 +33,10 @@ func (s *ShopCartPostgresStorage) AddShopCart(ctx context.Context, shop ShopCart
 	return nil
 }
 
-// no use tg
-// GetShopCartByTgID - CorzinaByTgId
 func (s *ShopCartPostgresStorage) GetShopCartByTgID(ctx context.Context, tgId int64) ([]ShopCart, error) {
-	conn, err := s.db.Connx(ctx)
-	if err != nil {
-		return nil, err
-	}
-	defer conn.Close()
-	//var products []model.Products
 	var corzine []dbCorzine
-	if err := conn.SelectContext(ctx,
+
+	if err := s.db.SelectContext(ctx,
 		&corzine,
 		`SELECT
      			id AS c_id,
@@ -66,16 +53,9 @@ func (s *ShopCartPostgresStorage) GetShopCartByTgID(ctx context.Context, tgId in
 	return lo.Map(corzine, func(corzin dbCorzine, _ int) ShopCart { return ShopCart(corzin) }), nil
 }
 
-// use tg
-// GetShopCartByTgIdAndArticle
 func (s *ShopCartPostgresStorage) GetShopCartByTgIdAndArticle(ctx context.Context, tgId int64, article int) (ShopCart, error) {
-	conn, err := s.db.Connx(ctx)
-	if err != nil {
-		return ShopCart{}, err
-	}
-	defer conn.Close()
 	var corzine dbCorzine
-	row := conn.QueryRowContext(ctx,
+	row := s.db.QueryRowContext(ctx,
 		`SELECT
      			id AS c_id,
      			tg_id AS c_tg_id,
@@ -85,24 +65,17 @@ func (s *ShopCartPostgresStorage) GetShopCartByTgIdAndArticle(ctx context.Contex
 	 			FROM corzina
 	 			WHERE (tg_id = $1 and article = $2)`,
 		tgId, article)
-	err = row.Scan(&corzine.ID, &corzine.TgId, &corzine.Article,
+	err := row.Scan(&corzine.ID, &corzine.TgId, &corzine.Article,
 		&corzine.Quantity, &corzine.CreatedAt)
 	if err != nil {
 		return ShopCart{}, err
 	}
-	//return lo.Map(corzine, func(corzin dbCorzine, _ int) model.Corzine { return model.Corzine(corzin) }), nil
+
 	return ShopCart{ID: corzine.ID, TgId: corzine.TgId, Article: corzine.Article, Quantity: corzine.Quantity, CreatedAt: corzine.CreatedAt}, nil
 }
 
-// use tg
-// UpdateShopCartByTgId -> UpdateCorzinaByTgId
 func (s *ShopCartPostgresStorage) UpdateShopCartByTgId(ctx context.Context, tgId int64, article int, quantity int) error {
-	conn, err := s.db.Connx(ctx)
-	if err != nil {
-		return err
-	}
-	defer conn.Close()
-	if _, err := conn.ExecContext(
+	if _, err := s.db.ExecContext(
 		ctx,
 		`UPDATE corzina SET quantity = $1 WHERE (tg_id = $2 AND article = $3)`,
 		quantity,
@@ -122,17 +95,9 @@ type dbCorzine struct {
 	CreatedAt time.Time `db:"c_created_at"`
 }
 
-// use tg
-// GetShopCartDetailByTgId - > CorzinaByTgIdwithCalalog
 func (s *ShopCartPostgresStorage) GetShopCartDetailByTgId(ctx context.Context, tgId int64) ([]DbCorzineCatalog, error) {
-	conn, err := s.db.Connx(ctx)
-	if err != nil {
-		return nil, err
-	}
-	defer conn.Close()
-	//var products []model.Products
 	var corzineall []DbCorzineCatalog
-	if err := conn.SelectContext(ctx,
+	if err := s.db.SelectContext(ctx,
 		&corzineall,
 		`SELECT corzina.id AS c_id, 
        		   corzina.tg_id AS c_tg_id,
@@ -154,15 +119,9 @@ func (s *ShopCartPostgresStorage) GetShopCartDetailByTgId(ctx context.Context, t
 	return corzineall, nil
 }
 
-// use tg
-// DeleteShopCartByTgId
 func (s *ShopCartPostgresStorage) DeleteShopCartByTgId(ctx context.Context, tgId int64) error {
-	conn, err := s.db.Connx(ctx)
-	if err != nil {
-		return err
-	}
-	defer conn.Close()
-	row, err := conn.QueryxContext(ctx, `DELETE FROM corzina WHERE tg_id = $1;`, tgId)
+
+	row, err := s.db.QueryxContext(ctx, `DELETE FROM corzina WHERE tg_id = $1;`, tgId)
 	defer row.Close()
 	if err != nil {
 		return err
@@ -170,20 +129,14 @@ func (s *ShopCartPostgresStorage) DeleteShopCartByTgId(ctx context.Context, tgId
 	return nil
 }
 
-// use tg
-// DeleteShopCartByTgIdAndArticle->DeleteCorzinaByTgIDandArticle
 func (s *ShopCartPostgresStorage) DeleteShopCartByTgIdAndArticle(ctx context.Context, tgId int64, article int) error {
-	conn, err := s.db.Connx(ctx)
-	if err != nil {
-		return err
-	}
-	defer conn.Close()
-	//var products []model.Products
-	row, err := conn.QueryxContext(ctx, `DELETE FROM corzina WHERE (tg_id = $1 and article = $2);`, tgId, article)
+
+	row, err := s.db.QueryxContext(ctx, `DELETE FROM corzina WHERE (tg_id = $1 and article = $2);`, tgId, article)
 	defer row.Close()
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
